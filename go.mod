@@ -1,6 +1,7 @@
 module github.com/Jigsaw-Code/outline-ss-server
 
 require (
+	github.com/anjieych/go-activeMQ v0.0.0-20180321094620-0ae37faa88ea
 	github.com/goreleaser/goreleaser v1.12.3
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/oschwald/geoip2-golang v1.8.0
@@ -88,6 +89,7 @@ require (
 	github.com/go-git/gcfg v1.5.0 // indirect
 	github.com/go-git/go-billy/v5 v5.3.1 // indirect
 	github.com/go-git/go-git/v5 v5.4.2 // indirect
+	github.com/go-stomp/stomp v2.1.4+incompatible // indirect
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/golang-jwt/jwt v3.2.1+incompatible // indirect

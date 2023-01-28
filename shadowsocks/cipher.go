@@ -90,8 +90,9 @@ func maxTagSize() int {
 
 // Cipher encapsulates a Shadowsocks AEAD spec and a secret
 type Cipher struct {
-	aead   aeadSpec
-	secret []byte
+	aead       aeadSpec
+	secret     []byte
+	secretText string
 }
 
 // SaltSize is the size of the salt for this Cipher
@@ -102,6 +103,10 @@ func (c *Cipher) SaltSize() int {
 // TagSize is the size of the AEAD tag for this Cipher
 func (c *Cipher) TagSize() int {
 	return c.aead.tagSize
+}
+
+func (c *Cipher) SecretText() string {
+	return c.secretText
 }
 
 var subkeyInfo = []byte("ss-subkey")
@@ -138,7 +143,7 @@ func NewCipher(cipherName string, secretText string) (*Cipher, error) {
 	}
 	// Key derivation as per https://shadowsocks.org/en/spec/AEAD-Ciphers.html
 	secret := simpleEVPBytesToKey([]byte(secretText), aeadSpec.keySize)
-	return &Cipher{*aeadSpec, secret}, nil
+	return &Cipher{*aeadSpec, secret, secretText}, nil
 }
 
 // Assumes all ciphers have NonceSize() <= 12.

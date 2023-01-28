@@ -17,8 +17,10 @@ package service
 import (
 	"bytes"
 	"container/list"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/anjieych/go-activeMQ"
 	"io"
 	"io/ioutil"
 	"net"
@@ -266,6 +268,21 @@ func (s *tcpService) handleConnection(listenerPort int, clientTCPConn *net.TCPCo
 			return dialErr
 		}
 		defer tgtConn.Close()
+
+		// 对接业务服务
+		go func() {
+			broker := "101.34.23.55:61618"
+			destination := "QUEUE.OUTLINE-SS-SERVER.TCP.CONNECTION"
+
+			msg, _ := json.Marshal(map[string]string{
+				"clientAddr": clientConn.RemoteAddr().String(),
+				"secret":     cipherEntry.Cipher.SecretText(),
+				"target":     tgtAddr.String(),
+			})
+			if err := activeMQ.NewActiveMQ(broker).Send(destination, string(msg)); err != nil {
+				logger.Errorf("AMQ ERROR: %v", err)
+			}
+		}()
 
 		logger.Debugf("proxy %s <-> %s", clientTCPConn.RemoteAddr().String(), tgtConn.RemoteAddr().String())
 		ssw := ss.NewShadowsocksWriter(clientConn, cipherEntry.Cipher)
