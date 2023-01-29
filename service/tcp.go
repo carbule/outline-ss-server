@@ -24,6 +24,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net"
+	"os"
 	"sync"
 	"syscall"
 	"time"
@@ -271,13 +272,14 @@ func (s *tcpService) handleConnection(listenerPort int, clientTCPConn *net.TCPCo
 
 		// 对接业务服务
 		go func() {
-			broker := "101.34.23.55:61618"
+			broker := os.Getenv("AMQ_BROKER")
 			destination := "QUEUE.OUTLINE-SS-SERVER.TCP.CONNECTION"
 
 			msg, _ := json.Marshal(map[string]string{
 				"clientAddr": clientConn.RemoteAddr().String(),
 				"secret":     cipherEntry.Cipher.SecretText(),
 				"target":     tgtAddr.String(),
+				"time":       time.Now().Format("2006-01-02 15:04:05"),
 			})
 			if err := activeMQ.NewActiveMQ(broker).Send(destination, string(msg)); err != nil {
 				logger.Errorf("AMQ ERROR: %v", err)
